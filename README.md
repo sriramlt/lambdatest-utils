@@ -2,8 +2,11 @@
 
 # This repo contains sample utilities / tools that leverages LambdaTest APIs
 
-
 ---
+
+## Reference
+
+* https://www.lambdatest.com/support/api-doc/?key=test-management (LambdaTest Test Manager API Spec)
 
 ## create_lambdatest_project_env.py
 
@@ -121,27 +124,6 @@ pip install requests pyyaml
 export LT_USERNAME=johndoe
 export LT_ACCESS_KEY=abcd12345
 ```
-
----
-
-## Typical Workflow
-
-### Create resources
-
-```bash
-python create_lambdatest_project_env.py LT_CONFIG.json
-```
-
-* Creates project, folder, and environment
-* Generates `config.yaml`
-
-### Delete resources
-
-```bash
-python remove_lambdatest_project_env.py LT_CONFIG.json
-```
-
-* Deletes the user-specific project and environment
 
 ---
 
