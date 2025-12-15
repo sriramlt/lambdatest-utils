@@ -1,6 +1,6 @@
 ---
 
-# This repo contains sample utilities / tools that leverages LambdaTest APIs
+# LambdaTest API Utilities & Automation Tools
 
 ---
 
