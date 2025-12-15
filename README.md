@@ -112,7 +112,7 @@ This ensures resource names are unique for every user.
 ## Prerequisites
 
 * Python 3.8 or higher
-* Required Python packages:
+* Required Python modules (request, PyYAML):
 
 ```bash
 python3 -m venv venv
