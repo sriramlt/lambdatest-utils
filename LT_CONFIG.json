@@ -1,0 +1,16 @@
+{
+  "project_name": "kaneai-github-demo",
+  "folder_name": "kaneai-generated",
+  "environment_name": "kaneai-github-demo-cfg",
+  "platform": "desktop",
+  "environment": {
+    "os_name": "Windows",
+    "os": "Windows 10",
+    "os_version": "Windows 10",
+    "browser": "Chrome",
+    "browser_version": "141.0",
+    "resolution": "1920x1080",
+    "platform_type": "web"
+  },
+  "output_file": "config.yaml"
+}
