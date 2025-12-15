@@ -115,7 +115,9 @@ This ensures resource names are unique for every user.
 * Required Python packages:
 
 ```bash
-pip install requests pyyaml
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
 * LambdaTest credentials exported as environment variables:
@@ -124,6 +126,8 @@ pip install requests pyyaml
 export LT_USERNAME=johndoe
 export LT_ACCESS_KEY=abcd12345
 ```
+
+* Clone the repo and run the scripts
 
 ---
 
