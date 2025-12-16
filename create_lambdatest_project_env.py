@@ -32,11 +32,13 @@ class LambdaTestClient:
                 auth=(self.username, self.access_key),
                 **kwargs
             )
+         
+            if resp.status_code == 409:
+                return resp.json()
+
             resp.raise_for_status()
             return resp.json()
-        except requests.HTTPError:
-            self._print_error(resp)
-            raise
+
         except requests.RequestException as e:
             print(f"[NETWORK ERROR] {e}")
             raise
@@ -69,10 +71,15 @@ class LambdaTestClient:
     # Specific API wrappers
     # -----------------------------------------------------
     def create_project(self, name):
-        return self.post(
+        response = self.post(
             f"{self.BASE_URL}/projects",
             json={"name": name, "source": "KTM"}
-        )["id"]
+        )
+
+        if "id" in response:
+            return response["id"]
+
+        raise RuntimeError("Failed to create or fetch project ID")
 
     def create_folder(self, project_id, folder_name):
         payload = {
@@ -86,6 +93,17 @@ class LambdaTestClient:
             f"{self.BASE_URL}/folder",
             json=payload
         )["id"]
+
+    def find_environment_id(self, env_name):
+        url = f"{self.BASE_URL}/environments?per_page=200"
+        result = self.get(url)
+
+        for item in result.get("data", []):
+            for env in item.get("environments", []):
+                if env.get("name") == env_name:
+                    return env.get("environment_id")
+
+        return None
 
     def create_environment(self, env_name, platform, env_config):
         payload = {
@@ -122,17 +140,19 @@ def load_input(path):
         return json.load(f)
 
 def save_config(out_file, pid, fid, eid, assignee_id):
-    config = {
-        "project_id": pid,
-        "folder_id": fid,
-        "environment_id": eid,
-        "assignee": assignee_id
-    }
+    dir_path = os.path.dirname(out_file)
+    if dir_path:
+        os.makedirs(dir_path, exist_ok=True)
 
-    os.makedirs(os.path.dirname(out_file), exist_ok=True)
     with open(out_file, "w") as f:
-        for k, v in config.items():
-            f.write(f'"{k}": "{v}"\n')
+        f.write(
+            "# LambdaTest AI Cloud Configuration\n"
+            f'project_id: "{pid}"\n'
+            f'folder_id: "{fid}"\n'
+            f"assignee: {assignee_id}\n"
+            f"environment_id: {eid}\n"
+            f'test_url: "https://staging-kaneai-nodejs-demo.onrender.com"\n'
+        )
 
     print(f"YAML written to {out_file}")
 
@@ -163,13 +183,19 @@ def main():
     fid = lt.create_folder(pid, folder_name)
     print("folder_id =", fid)
 
-    print("\nCreating environment...")
-    eid = lt.create_environment(
-        env_name=environment_name,
-        platform=cfg["platform"],
-        env_config=cfg["environment"]
-    )
-    print("environment_id =", eid)
+    print("\nEnsuring environment exists...")
+
+    eid = lt.find_environment_id(environment_name)
+
+    if eid:
+        print(f"Environment already exists, reusing: {eid}")
+    else:
+        eid = lt.create_environment(
+            env_name=environment_name,
+            platform=cfg["platform"],
+            env_config=cfg["environment"]
+        )
+        print("Environment created:", eid)
 
     # Fetch user ID only if needed
     print("\nFetching user details...")

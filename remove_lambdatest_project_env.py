@@ -82,7 +82,7 @@ class LambdaTestClient:
     def delete_environment(self, env_id):
         url = f"{self.BASE_URL}/environments/bulk-delete"
         payload = {"ids": [env_id]}
-        return self._request("DELETE", url, json=payload)
+        return self._request("POST", url, json=payload)
 
 # ==================
 # Load config JSON
